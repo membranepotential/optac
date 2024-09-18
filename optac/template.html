@@ -1,0 +1,196 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <style>
+      @import url("https://fonts.googleapis.com/css2?family=Josefin+Sans:wght@300&display=swap");
+
+      html {
+        background: #eee;
+      }
+
+      body {
+        font-family: "Josefine Sans", sans-serif, prince-no-fallback;
+        padding: 0;
+      }
+
+      p {
+        margin: 0;
+        font-size: 16px;
+        font-weight: normal;
+
+        text-align: left;
+      }
+
+      a {
+        text-decoration: none;
+        color: #000;
+      }
+
+      .puzzle {
+        width: 100%;
+        margin: 10vw auto 30vw auto;
+      }
+
+      .title {
+        font-weight: bold;
+
+        margin: auto;
+        padding-bottom: 4mm;
+        width: 55vmin;
+      }
+
+      .name {
+        font-size: 20px;
+        margin-bottom: 4mm;
+        text-align: center;
+      }
+
+      .variation {
+        margin: 4px 0;
+        padding: 10px 12px;
+      }
+
+      .board {
+        margin: auto;
+        text-align: center;
+      }
+
+      .board svg {
+        aspect-ratio: auto;
+        width: 60vmin;
+        height: 60vmin;
+        transition: box-shadow 300ms ease 0ms, border-color 300ms ease 0ms;
+        cursor: pointer;
+      }
+
+      .board svg:hover {
+        box-shadow: 0 0 15px #4876d3;
+      }
+
+      .board button {
+        padding: 0;
+        border: none;
+      }
+
+      .bg-grey {
+        background-color: #ccc;
+      }
+
+      .solution {
+        transition: all 500ms ease 100ms;
+        cursor: pointer;
+      }
+
+      .solution-hidden {
+        position: absolute;
+        visibility: hidden;
+        opacity: 0;
+        transition: all 400ms ease-out 0ms;
+      }
+
+      .solution-visible {
+        position: static;
+        visibility: visible;
+        opacity: 1;
+        transition: all 200ms ease-in 0ms;
+      }
+    </style>
+    <script type="text/javascript">
+      function initSolutions() {
+        const boxes = document.getElementsByClassName("solution");
+        for (var i = 0; i < boxes.length; i++) {
+          boxes[i].addEventListener("click", function () {
+            const children = this.children;
+            const placeholder = children[0];
+            const solution = children[1];
+
+            this.classList.remove("bg-grey");
+            placeholder.classList.add("solution-hidden");
+            placeholder.classList.remove("solution-visible");
+            solution.classList.add("solution-visible");
+            solution.classList.remove("solution-hidden");
+          });
+        }
+      }
+
+      function handleLichess(node) {
+        const link = node.getAttribute("href");
+        const imported = node.getAttribute("data-imported");
+
+        if (link) {
+          // imported and link available
+          console.log("Opening " + link);
+          window.open(link, "_blank").focus();
+          return false;
+        } else if (imported) {
+          // importing but no link yet
+          console.log("Import in progress");
+          return false;
+        }
+
+        // start import
+        console.log("Start import");
+        node.setAttribute("data-imported", "true");
+        const pgn = node.getAttribute("data-pgn");
+        const color = node.getAttribute("data-color");
+        const ply = node.getAttribute("data-ply");
+        console.log(pgn);
+
+        const pgnRequest = {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/x-www-form-urlencoded",
+          },
+          body: "pgn=" + encodeURIComponent(pgn),
+        };
+        console.log(pgnRequest);
+
+        fetch("https://lichess.org/api/import", pgnRequest)
+          .then((response) => response.json())
+          .then((response) => {
+            console.log(response);
+            const link = response.url + "/" + color + "#" + ply;
+            node.setAttribute("href", link);
+            window.open(link, "_blank").focus();
+          })
+          .catch(console.error);
+
+        return false;
+      }
+
+      window.addEventListener("DOMContentLoaded", function () {
+        initSolutions();
+      });
+    </script>
+  </head>
+
+  <body>
+    {% for puzzle in puzzles %}
+    <section class="puzzle" id="{{ puzzle.index }}">
+      <header class="title">
+        <h1 class="name">
+          Puzzle {{ puzzle.index }} &ndash; {{ puzzle.color.title() }} to move
+        </h1>
+        <div class="variation">
+          <p>{{ puzzle.variation_san }}</p>
+        </div>
+        <div class="variation solution bg-grey">
+          <p class="solution-visible">Solution</p>
+          <p class="solution-hidden">{{ puzzle.solution_san }}</p>
+        </div>
+      </header>
+      <div
+        class="board"
+        id="board-{{ puzzle.index }}"
+        onclick="return handleLichess(this);"
+        data-pgn="{{ puzzle.pgn | escape }}"
+        data-color="{{ puzzle.color }}"
+        data-ply="{{ puzzle.ply }}"
+      >
+        {{ puzzle.svg }}
+      </div>
+    </section>
+    {% endfor %}
+  </body>
+</html>
