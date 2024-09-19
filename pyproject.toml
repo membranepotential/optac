@@ -7,11 +7,20 @@ readme = "README.md"
 license = { text = "MIT License" }
 requires-python = ">=3.12"
 dependencies = [
-    "chess>=1.10.0",
-    "click>=8.1.7",
-    "jinja2>=3.1.4",
-    "requests>=2.32.3",
-    "backoff>=2.2.1",
+  "chess>=1.10.0",
+  "click>=8.1.7",
+  "jinja2>=3.1.4",
+  "requests>=2.32.3",
+  "backoff>=2.2.1",
+]
+
+[tool.pyright]
+typeCheckingMode = "basic"
+reportTypedDictNotRequiredAccess = false
+
+[tool.uv]
+dev-dependencies = [
+    "pytest>=8.3.3",
 ]
 
 [build-system]

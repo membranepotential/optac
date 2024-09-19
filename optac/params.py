@@ -1,14 +1,15 @@
 from dataclasses import dataclass, field
 from pathlib import Path
-from typing import Optional
 import json
+
+from chess.engine import ConfigMapping
 
 
 @dataclass
 class EngineParams:
     exec: Path
     depth: int
-    options: dict = field(default_factory=dict)
+    options: ConfigMapping = field(default_factory=dict)
 
     def __post_init__(self):
         self.exec = Path(self.exec)
@@ -16,10 +17,10 @@ class EngineParams:
 
 @dataclass
 class SearchParams:
-    top_percent: Optional[int] = None
-    top_n: Optional[int] = None
-    max_depth: Optional[int] = None
-    min_games: Optional[int] = None
+    top_percent: int | None = None
+    top_n: int | None = None
+    max_depth: int | None = None
+    min_games: int | None = None
 
 
 @dataclass

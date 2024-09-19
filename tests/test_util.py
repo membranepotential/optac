@@ -1,5 +1,5 @@
 import chess
-from chess.engine import PovScore, Score, Mate, Cp
+from chess.engine import PovScore, Mate, Cp
 
 from optac.util import score_to_dict, pov_score_from_dict
 

@@ -3,12 +3,11 @@ import asyncio
 from chess import Board
 from chess.engine import EventLoopPolicy
 
-
+from optac.analyse import Engine
 from optac.explorer import LichessExplorer
-from optac.engine import Engine
 from optac.params import SearchParams
-from optac.tactic import Tactic
 from optac.position_store import PositionStore
+from optac.tactic import Tactic
 from optac.tactic_store import TacticStore
 
 

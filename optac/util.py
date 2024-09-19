@@ -18,6 +18,7 @@ def score_from_dict(score_dict: dict[str, Optional[int]]) -> Score:
     if score_dict["mate"]:
         return Mate(score_dict["mate"])
     else:
+        assert score_dict["cp"] is not None
         return Cp(score_dict["cp"])
 
 
