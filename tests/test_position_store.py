@@ -1,14 +1,14 @@
 from pathlib import Path
 from tempfile import TemporaryDirectory
 from uuid import uuid4
-import pytest
 
 import chess
+import pytest
 from chess import Board, Move
 from chess.engine import Cp, PovScore
 
+from optac.analyse import Analysis, ScoredPV
 from optac.lichess import MoveStats
-from optac.engine import Analysis
 from optac.position_store import PositionStore, fen_without_moves
 
 
@@ -31,13 +31,13 @@ def top_moves():
 
 @pytest.fixture
 def analysis() -> Analysis:
+    move = Move.from_uci("e7e5")
+    score = PovScore(Cp(10), chess.WHITE)
+    result = ScoredPV([move], score)
     return Analysis(
         "stockfish",
         depth=20,
-        best=[Move.from_uci("e7e5")],
-        best_score=PovScore(Cp(10), chess.WHITE),
-        alternate=None,
-        alt_score=None,
+        result=[result],
     )
 
 

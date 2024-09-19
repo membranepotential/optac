@@ -4,7 +4,7 @@ import chess
 from chess import Board, Move
 from chess.engine import PovScore
 
-from optac.engine import Analysis, Engine
+from optac.analyse import Analysis, Engine
 from optac.util import score_to_dict, pov_score_from_dict
 
 PIECE_VALUES = {
@@ -78,7 +78,7 @@ class Tactic:
         threshold: int = 100,
     ):
         board = board.copy(stack=False)
-        last_score = 0
+        last_score = analysis.evaluation
         forced_sequence = []
         continue_sequence = True
 
@@ -88,10 +88,12 @@ class Tactic:
 
             board.push(analysis.best_move)
 
-            if board.is_game_over():
+            next_analysis = await engine.analyse(board)
+            if next_analysis is None:
+                # Game over
                 break
+            analysis = next_analysis
 
-            analysis = await engine.analyse(board)
             continue_sequence = (
                 analysis.is_forced(threshold)
                 or board.is_capture(analysis.best_move)
@@ -112,7 +114,7 @@ class Tactic:
             return cls(
                 position=position.copy(),
                 score=analysis.evaluation,
-                solution=analysis.best,
+                solution=analysis.best.pv,
             )
 
         elif analysis.is_forced(threshold):

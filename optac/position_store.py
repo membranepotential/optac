@@ -1,14 +1,13 @@
+import shelve
 from dataclasses import dataclass
 from pathlib import Path
 from typing import Optional
 
-import shelve
-
-from optac.lichess import MoveStats
-from optac.engine import Analysis
-from optac.tactic import Tactic
-
 from chess import Board
+
+from optac.analyse import Analysis
+from optac.lichess import MoveStats
+from optac.tactic import Tactic
 
 
 def fen_without_moves(board: Board) -> str:

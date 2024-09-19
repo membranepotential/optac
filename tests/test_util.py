@@ -1,7 +1,7 @@
 import chess
-from chess.engine import PovScore, Mate, Cp
+from chess.engine import Cp, Mate, PovScore
 
-from optac.util import score_to_dict, pov_score_from_dict
+from optac.util import pov_score_from_dict, score_to_dict
 
 
 def test_mate_to_from_dict():
