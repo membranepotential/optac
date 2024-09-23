@@ -5,7 +5,7 @@ import click
 from optac.position_store import PositionStore
 from optac.tactic_store import TacticStore
 from optac.params import OptacParams
-from optac.render import render_tactics
+from optac.output import render_html
 from optac.search import run_search
 
 
@@ -32,12 +32,14 @@ def search(params, positions, puzzles):
 
 
 @cli.command()
-@click.argument("html", type=click.Path(path_type=Path))
+@click.argument("path", type=click.Path(path_type=Path))
 @click.option("--puzzles", "-p", type=click.Path(path_type=Path), required=True)
-def render(html, puzzles):
+def render(path: Path, puzzles: Path):
     tactic_store = TacticStore(puzzles)
     tactics = tactic_store.list()
-    render_tactics(tactics, path=html)
+
+    html = render_html(tactics)
+    path.write_text(html)
 
 
 if __name__ == "__main__":

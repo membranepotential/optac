@@ -73,10 +73,13 @@ class Tactic:
     @staticmethod
     async def calculate_forced_sequence(
         board: Board,
-        analysis: Analysis,
+        analysis: Analysis | None,
         engine: Engine,
         threshold: int = 100,
     ):
+        if board.is_game_over() or analysis is None:
+            raise ValueError("Cannot calculate finished game")
+
         board = board.copy(stack=False)
         last_score = analysis.evaluation
         forced_sequence = []
@@ -88,11 +91,10 @@ class Tactic:
 
             board.push(analysis.best_move)
 
-            next_analysis = await engine.analyse(board)
-            if next_analysis is None:
+            analysis = await engine.analyse(board)
+            if analysis is None:
                 # Game over
                 break
-            analysis = next_analysis
 
             continue_sequence = (
                 analysis.is_forced(threshold)

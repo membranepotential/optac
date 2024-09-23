@@ -9,7 +9,7 @@ from chess.engine import Cp, PovScore
 
 from optac.analyse import Analysis, ScoredPV
 from optac.lichess import MoveStats
-from optac.position_store import PositionStore, fen_without_moves
+from optac.position_store import PositionStore, fen_without_ply
 
 
 @pytest.fixture(scope="session")
@@ -69,7 +69,7 @@ def test_mark_tactic(position_store):
         position.mark_tactic(tactic_start)
 
     with position_store.load(board) as position:
-        assert position.tactic_parent_fen == fen_without_moves(tactic_start)
+        assert position.tactic_parent_fen == fen_without_ply(tactic_start)
         assert position.dont_explore
 
 

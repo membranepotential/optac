@@ -8,7 +8,12 @@ from .analysis import Analysis
 
 
 class Engine(AbstractAsyncContextManager):
-    def __init__(self, exec: Path, depth: int, options: ConfigMapping | None = None):
+    def __init__(
+        self,
+        exec: Path | str,
+        depth: int,
+        options: ConfigMapping | None = None,
+    ):
         self.exec = Path(exec)
         self.name = self.exec.name
         self.depth = depth

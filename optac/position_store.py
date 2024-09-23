@@ -1,7 +1,6 @@
 import shelve
 from dataclasses import dataclass
 from pathlib import Path
-from typing import Optional
 
 from chess import Board
 
@@ -10,7 +9,7 @@ from optac.lichess import MoveStats
 from optac.tactic import Tactic
 
 
-def fen_without_moves(board: Board) -> str:
+def fen_without_ply(board: Board) -> str:
     fen = board.fen()
     parts = fen.split(" ")
     assert len(parts) == 6
@@ -20,10 +19,10 @@ def fen_without_moves(board: Board) -> str:
 @dataclass
 class Position:
     fen: str
-    top_moves: Optional[list[MoveStats]] = None
-    analysis: Optional[Analysis] = None
-    tactic: Optional[Tactic] = None
-    tactic_ply: Optional[int] = None
+    top_moves: list[MoveStats] | None = None
+    analysis: Analysis | None = None
+    tactic: Tactic | None = None
+    tactic_ply: int | None = None
 
     @property
     def starts_tactic(self):
@@ -63,7 +62,7 @@ class ActivePosition(Position):
 class PositionStore:
     def __init__(self, path: Path):
         self.path = str(path)
-        self.shelf: Optional[shelve.Shelf] = None
+        self.shelf: shelve.Shelf | None = None
         self.open_positions = set()
 
     def __enter__(self):
@@ -71,11 +70,12 @@ class PositionStore:
         return self
 
     def __exit__(self, *args):
-        self.shelf.close()
-        self.shelf = None
+        if self.shelf is not None:
+            self.shelf.close()
+            self.shelf = None
 
     def load(self, board: Board) -> ActivePosition:
-        fen = fen_without_moves(board)
+        fen = fen_without_ply(board)
 
         if self.shelf is None:
             raise ValueError("PositionStore not open")

@@ -1,10 +1,8 @@
-from typing import Optional, Union
-
 import chess
-from chess.engine import Score, PovScore, Mate, Cp
+from chess.engine import Cp, Mate, PovScore, Score
 
 
-def score_to_dict(score: Union[Score, PovScore]) -> dict[str, Optional[int]]:
+def score_to_dict(score: Score | PovScore) -> dict[str, int | None]:
     if isinstance(score, PovScore):
         score = score.white()
 
@@ -14,7 +12,7 @@ def score_to_dict(score: Union[Score, PovScore]) -> dict[str, Optional[int]]:
         return {"mate": None, "cp": score.score()}
 
 
-def score_from_dict(score_dict: dict[str, Optional[int]]) -> Score:
+def score_from_dict(score_dict: dict[str, int | None]) -> Score:
     if score_dict["mate"]:
         return Mate(score_dict["mate"])
     else:
@@ -23,7 +21,7 @@ def score_from_dict(score_dict: dict[str, Optional[int]]) -> Score:
 
 
 def pov_score_from_dict(
-    score_dict: dict[str, Optional[int]],
+    score_dict: dict[str, int | None],
     color: chess.Color = chess.WHITE,
 ) -> PovScore:
     score = score_from_dict(score_dict)

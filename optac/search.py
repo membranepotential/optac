@@ -5,7 +5,7 @@ from chess.engine import EventLoopPolicy
 
 from optac.analyse import Engine
 from optac.explorer import LichessExplorer
-from optac.params import SearchParams
+from optac.params import OptacParams
 from optac.position_store import PositionStore
 from optac.tactic import Tactic
 from optac.tactic_store import TacticStore
@@ -23,7 +23,7 @@ def mark_tactic_positions(tactic: Tactic, store: PositionStore):
 
 
 async def search(
-    params: SearchParams,
+    params: OptacParams,
     position_store: PositionStore,
     tactic_store: TacticStore,
 ):
@@ -58,9 +58,11 @@ async def search(
                         if position.analysis is None:
                             position.analysis = await engine.analyse(board)
 
-                        if position.tactic is None:
+                        if position.analysis is not None and position.tactic is None:
                             tactic = await Tactic.find_in_position(
-                                board, position.analysis, engine
+                                position=board,
+                                analysis=position.analysis,
+                                engine=engine,
                             )
 
                             if tactic and (tactic.is_mate or tactic.wins_material):
@@ -74,7 +76,7 @@ async def search(
 
 
 def run_search(
-    params: SearchParams,
+    params: OptacParams,
     position_store: PositionStore,
     tactic_store: TacticStore,
 ):

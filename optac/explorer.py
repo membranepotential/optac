@@ -1,7 +1,7 @@
 from collections import deque
-from typing import Optional
+from typing import Iterator
 
-from chess import Board
+from chess import Board, Move
 
 from optac.lichess import LichessAPI, MoveStats
 from optac.position_store import PositionStore
@@ -12,10 +12,10 @@ class LichessExplorer:
         self,
         start_fen: str,
         store: PositionStore,
-        max_depth: int,
-        min_games: Optional[int] = None,
-        top_percent: Optional[int] = None,
-        top_n: Optional[int] = None,
+        max_depth: int | None = None,
+        min_games: int | None = None,
+        top_percent: int | None = None,
+        top_n: int | None = None,
     ):
         self.start = start_fen
         self.store = store
@@ -28,7 +28,7 @@ class LichessExplorer:
 
         self.lichess = LichessAPI()
 
-    def filter_top_moves(self, moves: list[MoveStats]):
+    def filter_top_moves(self, moves: list[MoveStats]) -> Iterator[Move]:
         if self.top_percent is not None:
             total = sum(move.games for move in moves)
             cumulative = 0.0
@@ -48,16 +48,16 @@ class LichessExplorer:
                 if cumulative > self.top_percent / 100:
                     return
 
-    def __iter__(self):
+    def __iter__(self) -> Iterator[Board]:
         return self.search_moves()
 
-    def search_moves(self):
+    def search_moves(self) -> Iterator[Board]:
         queue = deque([Board(self.start)])
         while queue:
             board = queue.popleft()
             yield board
 
-            if len(board.move_stack) < self.max_depth:
+            if self.max_depth is not None and len(board.move_stack) < self.max_depth:
                 next_moves = []
 
                 with self.store.load(board) as position:

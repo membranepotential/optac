@@ -46,14 +46,12 @@ def prepare_puzzles(tactics: list[Tactic]):
     return puzzles
 
 
-def render_tactics(tactics: list[Tactic], path: Path):
+def render_html(tactics: list[Tactic]) -> str:
     puzzles = prepare_puzzles(tactics)
 
     jinja = Environment(
-        loader=FileSystemLoader(Path(__file__).parent), autoescape=False
+        loader=FileSystemLoader(Path(__file__).parent),
+        autoescape=False,
     )
     template = jinja.get_template("template.html")
-    page = template.render(puzzles=puzzles)
-
-    with open(path, "w") as f:
-        f.write(page)
+    return template.render(puzzles=puzzles)
