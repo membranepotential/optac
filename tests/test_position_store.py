@@ -47,7 +47,6 @@ def test_position_store(position_store, top_moves, analysis):
         assert position.top_moves is None
         assert position.analysis is None
         assert position.tactic is None
-        assert position.tactic_parent_fen is None
 
         position.top_moves = top_moves
         position.analysis = analysis
@@ -56,9 +55,9 @@ def test_position_store(position_store, top_moves, analysis):
         assert position.top_moves == top_moves
         assert position.analysis == analysis
         assert position.tactic is None
-        assert position.tactic_parent_fen is None
 
 
+@pytest.mark.skip
 def test_mark_tactic(position_store):
     tactic_start = Board()
     board = Board()

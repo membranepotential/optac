@@ -58,7 +58,7 @@ async def search(
                         if position.analysis is None:
                             position.analysis = await engine.analyse(board)
 
-                        if position.analysis is not None and position.tactic is None:
+                        if position.analysis is not None and not position.in_tactic:
                             tactic = await Tactic.find_in_position(
                                 position=board,
                                 analysis=position.analysis,

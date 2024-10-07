@@ -22,7 +22,7 @@ class Position:
     top_moves: list[MoveStats] | None = None
     analysis: Analysis | None = None
     tactic: Tactic | None = None
-    tactic_ply: int | None = None
+    tactic_ply: int = 0
 
     @property
     def starts_tactic(self):
